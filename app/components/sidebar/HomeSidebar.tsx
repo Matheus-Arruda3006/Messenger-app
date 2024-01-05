@@ -3,8 +3,18 @@
 import useRoutes from '@/app/hooks/useRoutes';
 import React, { useState } from 'react'
 import HomeItem from './HomeItem';
+import { User } from '@prisma/client';
+import Avatar from '../Avatar';
 
-const HomeSidebar = () => {
+interface HomeSidebarProps {
+  currentUser: User
+}
+
+const HomeSidebar: React.FC<HomeSidebarProps> = ({
+  currentUser
+}) => {
+
+  console.log(currentUser);
 
     const routes = useRoutes();
 
@@ -18,6 +28,11 @@ const HomeSidebar = () => {
                 <HomeItem key={item.label} href={item.href} label={item.label} icon={item.icon} active={item.active} onClick={item.onClick}/>
               ))}
             </ul>
+        </nav>
+        <nav className='mt-4 flex flex-col justify-between items-center '>
+                <div onClick={() => setIsOpen(true)} className='cursor-pointer hover:opacity-75 transition'>
+                    <Avatar user={currentUser}/>
+                </div>
         </nav>
     </div>
   )
