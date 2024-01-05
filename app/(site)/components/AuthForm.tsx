@@ -8,6 +8,9 @@ import AuthSocialButton from './AuthSocialButton';
 import axios from 'axios';
 
 import {BsGithub, BsGoogle} from 'react-icons/bs';
+import toast from 'react-hot-toast';
+
+import {signIn} from 'next-auth/react'
 
 type Variant =  'LOGIN' | 'REGISTER'
 
@@ -44,17 +47,39 @@ const AuthForm = () => {
 
         if(variant === 'REGISTER'){
             axios.post('/api/register', data)
+            .catch(() => toast.error('Something went wrong'))
+            .finally(() => setIsLoading(false))
         }
 
         if(variant === 'LOGIN'){
-            //NextAuth Signin
+            signIn('credentials', {
+                ...data,
+                redirect: false
+            }).then((callback) => {
+                if (callback?.error){
+                    toast.error('Invalid credentials');
+                }
+
+                if(callback?.ok && !callback?.error){
+                    toast.success('Success');
+                }
+            }).finally(() => setIsLoading(false));
         }
     }
 
     const socialAction = (action: string) => {
         setIsLoading(true);
 
-        //NextAuth social action 
+        signIn(action, {redirect: false})
+        .then((callback) => {
+            if(callback?.error){
+                toast.error('Invalid credentials');
+            }
+
+            if(callback?.ok && !callback?.error){
+                toast.success('Logged in!');
+            }
+        }).finally(() => setIsLoading(false));
     }
 
 
@@ -86,8 +111,7 @@ const AuthForm = () => {
 
                     <div className='mt-6 flex gap-2 justify-center rounded-md bg-white px-4 py-2 text-gray-500 
                     shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0 space-x-20'>
-                        <AuthSocialButton icon={BsGithub} onClick={() => socialAction('github')}/>
-                        <AuthSocialButton icon={BsGoogle} onClick={() => socialAction('google')}/>
+                        <AuthSocialButton icon={BsGithub} onClick={() => socialAction('github')}/>      
                     </div>
             </div>
             <div className='flex gap-2 justify-center text-sm mt-6 px-2 text-gray-500'>
