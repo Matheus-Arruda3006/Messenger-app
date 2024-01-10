@@ -23,7 +23,7 @@ const Header: React.FC<HeaderProps> = ({
             return `${conversation.users.length} members`;
         }
 
-        return 'Active'
+        return 'Online'
     }, [conversation]);
 
     return (
